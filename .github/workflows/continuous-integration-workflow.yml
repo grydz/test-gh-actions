@@ -1,0 +1,35 @@
+# Build Monero App and run tests
+
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  job_test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    services:
+      python:
+        image: docker://python:3.8-slim
+        options: >-
+          --entrypoint /bin/bash
+          --workdir /myapp
+          --health-cmd "true"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        volumes:
+          - /myapp:/github/workspace
+
+    steps:
+      - name: Clone
+        uses: actions/checkout@v2
+
+      - name: Launch Test
+        run: |
+          docker ps -a
+          docker exec ${{ job.services.python.id }} bash -c "python --version"
